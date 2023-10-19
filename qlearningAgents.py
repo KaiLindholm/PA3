@@ -14,6 +14,7 @@
 
 from game import *
 from learningAgents import ReinforcementAgent
+
 from featureExtractors import *
 from backend import ReplayMemory
 
@@ -23,7 +24,7 @@ import backend
 import gridworld
 
 
-import random,util,math
+import random, util, math
 import numpy as np
 import copy
 
@@ -47,8 +48,7 @@ class QLearningAgent(ReinforcementAgent):
     def __init__(self, **args):
         "You can initialize Q-values here..."
         ReinforcementAgent.__init__(self, **args)
-
-        "*** YOUR CODE HERE ***"
+        self.values = util.Counter() # Initialize Q(s,a) to 0
 
     def getQValue(self, state, action):
         """
@@ -56,9 +56,8 @@ class QLearningAgent(ReinforcementAgent):
           Should return 0.0 if we have never seen a state
           or the Q node value otherwise
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
-
+        return self.values[(state, action)]
+  
     def computeValueFromQValues(self, state):
         """
           Returns max_action Q(state,action)
@@ -66,8 +65,12 @@ class QLearningAgent(ReinforcementAgent):
           there are no legal actions, which is the case at the
           terminal state, you should return a value of 0.0.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+          
+        actions = self.getLegalActions(state)
+        if len(actions) == 0:
+            return 0.0
+        
+        return max([self.getQValue(state, action) for action in actions])
 
     def computeActionFromQValues(self, state):
         """
@@ -75,8 +78,20 @@ class QLearningAgent(ReinforcementAgent):
           are no legal actions, which is the case at the terminal state,
           you should return None.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        
+        actions = self.getLegalActions(state)
+        if len(actions) == 0:
+            return None
+        
+        maxQ = float("-inf")
+        best_action = None
+        for action in actions: # find the optimal action from a max Qvalue
+            Qval = self.getQValue(state, action)
+            if Qval > maxQ:
+                maxQ = Qval 
+                best_action = action  
+        
+        return best_action
 
     def getAction(self, state):
         """
@@ -88,13 +103,8 @@ class QLearningAgent(ReinforcementAgent):
           HINT: You might want to use util.flipCoin(prob)
           HINT: To pick randomly from a list, use random.choice(list)
         """
-        # Pick Action
-        legalActions = self.getLegalActions(state)
-        action = None
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
-
-        return action
+        # Pick an Action either randomly or greedily
+        return random.choice(self.getLegalActions(state)) if util.flipCoin(self.epsilon) else self.getPolicy(state)
 
     def update(self, state, action, nextState, reward):
         """
@@ -104,8 +114,11 @@ class QLearningAgent(ReinforcementAgent):
           NOTE: You should never call this function,
           it will be called on your behalf
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+          
+        # Q(s,a) = (1-alpha) * Q(s,a) + alpha * (reward + discount * max_a' Q(s',a')) equation is from the lecture
+        self.values[(state, action)] = (1 - self.alpha) * self.getQValue(state, action) + self.alpha * (reward + self.discount * self.computeValueFromQValues(nextState))
+        
+        return self.values[(state, action)]
 
     def getPolicy(self, state):
         return self.computeActionFromQValues(state)

@@ -19,40 +19,40 @@
 # Set the given parameters to obtain the specified policies through
 # value iteration.
 
-def question2a():
-    answerDiscount = None
-    answerNoise = None
-    answerLivingReward = None
+def question2a(): # Prefer the close exit (+1), risk the cliff (-10)
+    answerDiscount = 0.5
+    answerNoise = 0
+    answerLivingReward = -5
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 
-def question2b():
-    answerDiscount = None
-    answerNoise = None
-    answerLivingReward = None
+def question2b(): # Prefer the close exit (+1), but avoiding the cliff (-10)
+    answerDiscount = 0.2      # lower discount to encourage finishing the grid quickly
+    answerNoise = 0.2
+    answerLivingReward = -1   # sort of a low living reward to encourage finishing the grid quickly.
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 
-def question2c():
-    answerDiscount = None
-    answerNoise = None
-    answerLivingReward = None
+def question2c(): # Prefer the distant exit (+10), risking the cliff (-10)
+    answerDiscount = 0.3
+    answerNoise = 0.002
+    answerLivingReward = 1.1   # lower living reward to encourage risk
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 
-def question2d():
-    answerDiscount = None
-    answerNoise = None
-    answerLivingReward = None
+def question2d(): # Prefer the distant exit (+10), avoiding the cliff (-10)
+    answerDiscount = 0.15
+    answerNoise = 0.45
+    answerLivingReward = 3  # lower living reward to encourage risk
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 
-def question2e():
-    answerDiscount = None
-    answerNoise = None
-    answerLivingReward = None
+def question2e(): # Avoid both exits and the cliff (so an episode should never terminate)
+    answerDiscount = 0.95
+    answerNoise = 0.002
+    answerLivingReward = 100 # really high living reward to encourage staying alive
     return answerDiscount, answerNoise, answerLivingReward
-    # If not possible, return 'NOT POSSIBLE'
+    # If not possible, 
 
 if __name__ == '__main__':
     print('Answers to analysis questions:')

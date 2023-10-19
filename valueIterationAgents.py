@@ -1,4 +1,4 @@
-# valueIterationAgents.py
+# qlearningAgents.py# valueIterationAgents.py
 # -----------------------
 # Licensing Information:  You are free to use or extend these projects for
 # educational purposes provided that (1) you do not distribute or publish
@@ -60,9 +60,18 @@ class ValueIterationAgent(ValueEstimationAgent):
         self.runValueIteration()
 
     def runValueIteration(self):
-        # Write value iteration code here
-        "*** YOUR CODE HERE ***"
-
+        iter = 0
+        while iter < self.iterations: # for each iteration, update the value of each state
+            tmp = util.Counter()
+            for state in self.mdp.getStates():
+                # for each state compute the Qvalue of each action and update the value of the state
+                Qvals = [self.computeQValueFromValues(state, action) for action in self.mdp.getPossibleActions(state)]
+                if len(Qvals) > 0: # if there are possible actions, update the value of the state
+                    tmp[state] = max(Qvals)
+                    
+            self.values = tmp 
+            iter += 1
+        
     def getValue(self, state):
         """
           Return the value of the state (computed in __init__).
@@ -74,9 +83,16 @@ class ValueIterationAgent(ValueEstimationAgent):
           Compute the Q-value of action in state from the
           value function stored in self.values.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
-
+        
+        # From the current state iterate through all possible next states and acquire the probability of each state 
+        T = self.mdp.getTransitionStatesAndProbs(state, action)
+        Qval = 0 
+        
+        for next_state, prob in T:
+            Qval += prob * (self.mdp.getReward(state, action, next_state) + self.discount * self.values[next_state])
+            
+        return Qval 
+    
     def computeActionFromValues(self, state):
         """
           The policy is the best action in the given state
@@ -85,9 +101,17 @@ class ValueIterationAgent(ValueEstimationAgent):
           You may break ties any way you see fit.  Note that if
           there are no legal actions, which is the case at the
           terminal state, you should return None.
-        """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        """ 
+        
+        best_action = None 
+        maxQ = float("-inf")
+        for action in self.mdp.getPossibleActions(state): # for each possible action, computer its Qvalue and compare it to the max Qvalue
+            Qval = self.computeQValueFromValues(state, action)
+            if Qval > maxQ:
+                maxQ = Qval
+                best_action = action
+        
+        return best_action
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
